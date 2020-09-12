@@ -28,7 +28,7 @@ export default class GameScene extends Phaser.Scene {
     } else if (this.cursors.down.isDown) {
       this.player.moveDown();
     } else {
-      this.player.faceFront();
+      this.player.stop();
     }
   }
 }

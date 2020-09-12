@@ -45,6 +45,16 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.anims.play("player-face-front", true);
   }
 
+  stop() {
+    let middleFrameIndex = Math.ceil(this.anims.currentAnim.frames.length / 2);
+    if (middleFrameIndex < this.anims.currentFrame) {
+      this.anims.stopOnFrame(this.anims.currentAnim.frames[0]);
+    } else {
+      this.anims.stopOnFrame(this.anims.currentAnim.frames[middleFrameIndex]);
+    }
+    // console.log(this.anims.currentAnim, stopAtFrame)
+  }
+
   createAnimations() {
     ["up", "down", "left", "right"].forEach((dir) => {
       let direction = {
