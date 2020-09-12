@@ -6,4 +6,5 @@ export default new Phaser.Game({
   width: 800,
   height: 600,
   scene: [GameScene],
+  backgroundColor: '#ffffff'
 });
