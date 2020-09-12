@@ -1,24 +1,45 @@
 import Phaser from "phaser";
+import stories from "../stories";
 
-export default class Player extends Phaser.GameObjects.Sprite {
+export default class Player extends Phaser.Physics.Arcade.Sprite {
   /**
    * @param {Phaser.Scene} scene
    * @param {number} x
    * @param {number} y
    */
-  constructor(scene, x, y) {
+  constructor(scene, x, y, story=null) {
     super(
       scene,
       x,
       y,
       "player",
-      "Front/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png"
+      // "Front/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png"
     );
     this.scene = scene;
     this.speed = 1;
+    this.steps = 0;
     this.createAnimations();
     this.play("player-face-front");
-    scene.add.existing(this);
+    this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
+    this.setCollideWorldBounds(true);
+    if (story) {
+      this.story = stories[story]
+      this.story.currentMovementIndex = 0;
+      // this.scene.physics.add.collider(this)
+    }
+  }
+
+  playStory() {
+    if (this.story) {
+      if (!this.currentMovement || this.steps >= this.currentMovement.steps) {
+        this.steps = 0;
+        this.story.currentMovementIndex = (this.story.currentMovementIndex + 1) % this.story.movements.length;
+        this.currentMovement = this.story.movements[this.story.currentMovementIndex]
+      }
+      this[this.currentMovement.action]();
+      this.steps += 1;
+    }
   }
 
   moveToX(x) {
@@ -51,6 +72,16 @@ export default class Player extends Phaser.GameObjects.Sprite {
   moveDown() {
     this.setY(this.y + this.speed);
     this.anims.play("player-walk-down", true);
+  }
+
+  moveRandom() {
+    if (this.steps % (this.randomStepCount || 100) === 0) {
+      this.nextMove = [this.moveDown, this.moveUp, this.moveRight, this.moveLeft][Math.floor(Math.random() * 4)].bind(this)
+      this.steps = 0;
+      this.randomStepCount = [120, 90, 50, 60][Math.floor(Math.random() * 4)]
+    }
+    this.nextMove()
+    this.steps += 1;
   }
 
   faceFront() {

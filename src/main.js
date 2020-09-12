@@ -7,7 +7,13 @@ let game = new Phaser.Game({
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  backgroundColor: "#ffffff",
+  physics: {
+    default: "arcade",
+    arcade: {
+      // debug: true
+    },
+  },
+  backgroundColor: '#ffffff'
 });
 // window.game = game;
 
