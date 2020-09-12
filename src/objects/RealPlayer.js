@@ -11,7 +11,6 @@ export default class RealPlayer extends RealtimePlayer {
 
   getPlayerKey(parts) {
     // prettier-ignore
-    console.log(`games/${this.uuid}/players/${this.username}${parts ? '/' + parts : ''}`);
     return `games/${this.uuid}/players/${this.username}${parts ? '/' + parts : ''}`;
   }
 }
