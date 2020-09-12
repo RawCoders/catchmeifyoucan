@@ -1,10 +1,11 @@
+/* global process */
+
 import * as firebase from "firebase/app";
 import "firebase/database";
 
 let fconfig = {
-  apiKey: "API_KEY",
-  authDomain: "",
-  databaseURL: "",
+  apiKey: process.env.FIREBASE_API_KEY,
+  databaseURL: `https://${process.env.FIREBASE_DB}.firebaseio.com`,
 };
 firebase.initializeApp(fconfig);
 

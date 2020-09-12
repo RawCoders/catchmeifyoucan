@@ -1,10 +1,32 @@
 import Phaser from "phaser";
-import GameScene from "./scenes/GameScene";
+import TitleScene from "./scenes/TitleScene";
+import Race from "./scenes/Race";
+import database from "./database";
 
-export default new Phaser.Game({
+let game = new Phaser.Game({
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  scene: [GameScene],
-  backgroundColor: '#ffffff'
+  backgroundColor: "#ffffff",
 });
+// window.game = game;
+
+game.scene.add("title-scene", new TitleScene());
+game.scene.add("race-scene", new Race());
+
+let params = new URLSearchParams(window.location.search);
+
+if (params.has("id")) {
+  database.ref(`games/${params.get("id")}`).once("value", (s) => {
+    let val = s.val();
+    if (val && val.uuid && val.mode == "race") {
+      game.scene.start("race-scene", val);
+    } else {
+      game.scene.start("title-scene");
+    }
+  });
+} else {
+  game.scene.start("title-scene");
+}
+
+export default game;

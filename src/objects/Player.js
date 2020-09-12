@@ -21,6 +21,18 @@ export default class Player extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
   }
 
+  moveToX(x) {
+    let direction = x - this.x > 0 ? "right" : "left";
+    this.setX(x);
+    this.anims.play(`player-walk-${direction}`, true);
+  }
+
+  moveToY(y) {
+    let direction = y - this.y > 0 ? "down" : "up";
+    this.setY(y);
+    this.anims.play(`player-walk-${direction}`, true);
+  }
+
   moveRight() {
     this.setX(this.x + this.speed);
     this.anims.play("player-walk-right", true);
