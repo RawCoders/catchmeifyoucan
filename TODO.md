@@ -1,0 +1,7 @@
+- [ ] Start Screen
+- [ ] Create game with joinable link
+- [ ] Game Mode
+	- [ ] Reach target (1 sniper)
+		- [ ] Map
+		- [ ] Scoreboard
+		- [ ] NPC AI
