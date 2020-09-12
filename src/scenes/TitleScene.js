@@ -36,6 +36,7 @@ export default class TitleScene extends Phaser.Scene {
 
   createNewGame(username, mode) {
     let uuid = uuidv4();
+    let npcs = this.getNPCs(5, 'toAndFro');
     return database
       .ref(`games/${uuid}`)
       .set({
@@ -50,9 +51,18 @@ export default class TitleScene extends Phaser.Scene {
             y: Phaser.Math.Between(100, 600),
           },
         },
+        npcs: npcs
       })
       .then(() => {
         return uuid;
       });
+  }
+
+  getNPCs(count, story) {
+    let npcs = []
+    Array.from(Array(count)).forEach(() => {
+      npcs.push({x: Phaser.Math.Between(0, 800), y: Phaser.Math.Between(0, 600), story})
+    })
+    return npcs
   }
 }

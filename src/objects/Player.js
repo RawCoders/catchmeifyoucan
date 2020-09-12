@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import stories from "../stories";
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   /**
@@ -7,7 +6,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
    * @param {number} x
    * @param {number} y
    */
-  constructor(scene, x, y, story=null) {
+  constructor(scene, x, y) {
     super(
       scene,
       x,
@@ -23,23 +22,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
-    if (story) {
-      this.story = stories[story]
-      this.story.currentMovementIndex = 0;
-      // this.scene.physics.add.collider(this)
-    }
-  }
-
-  playStory() {
-    if (this.story) {
-      if (!this.currentMovement || this.steps >= this.currentMovement.steps) {
-        this.steps = 0;
-        this.story.currentMovementIndex = (this.story.currentMovementIndex + 1) % this.story.movements.length;
-        this.currentMovement = this.story.movements[this.story.currentMovementIndex]
-      }
-      this[this.currentMovement.action]();
-      this.steps += 1;
-    }
   }
 
   moveToX(x) {

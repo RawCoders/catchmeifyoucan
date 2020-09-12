@@ -3,6 +3,7 @@ import GameScene from "./GameScene";
 import database from "../database";
 import { getUser } from "../getUser";
 import RealPlayer from "../objects/RealPlayer";
+import NPC from "../objects/NPC";
 
 export default class Race extends GameScene {
   /** @type {{ createdBy: string; uuid: string; players: Array }} */
@@ -30,6 +31,7 @@ export default class Race extends GameScene {
 
     this.players = [];
     this.username = getUser();
+    this.npcs = [];
 
     if (!this.gameData.players[this.username]) {
       let value = window.confirm("Join Game?");
@@ -51,6 +53,13 @@ export default class Race extends GameScene {
         this.players.push(new RealPlayer(this, username, this.gameData.uuid));
         this.findPlayer();
       });
+
+    database
+      .ref(`games/${this.gameData.uuid}/npcs`)
+      .on("child_added", (snap) => {
+        let data = snap.val();
+        this.npcs.push(new NPC(this, snap.key, this.gameData.uuid, data.story));
+      });
   }
 
   findPlayer() {
@@ -61,6 +70,7 @@ export default class Race extends GameScene {
   }
 
   update() {
+    this.npcs.forEach(npc => npc.playStory());
     if (!this.player) {
       return;
     }

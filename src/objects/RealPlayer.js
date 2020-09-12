@@ -1,41 +1,17 @@
-import Player from "./Player";
-import database from "../database";
+import RealtimePlayer from "./RealtimePlayer";
 
-export default class RealPlayer extends Player {
+export default class RealPlayer extends RealtimePlayer {
   constructor(scene, username, uuid) {
     super(scene, 0, 0);
     this.uuid = uuid;
     this.username = username;
-    database.ref(this.getPlayerKey("x")).on("value", (snap) => {
-      this.moveToX(snap.val() || 0);
-    });
-    database.ref(this.getPlayerKey("y")).on("value", (snap) => {
-      this.moveToY(snap.val() || 0);
-    });
-  }
+    this.setupRealtime();
 
-  moveRight() {
-    let finalX = this.x + this.speed;
-    database.ref(this.getPlayerKey("x")).set(finalX);
-  }
-
-  moveLeft() {
-    let finalX = this.x - this.speed;
-    database.ref(this.getPlayerKey("x")).set(finalX);
-  }
-
-  moveUp() {
-    let finalY = this.y - this.speed;
-    database.ref(this.getPlayerKey("y")).set(finalY);
-  }
-
-  moveDown() {
-    let finalY = this.y + this.speed;
-    database.ref(this.getPlayerKey("y")).set(finalY);
   }
 
   getPlayerKey(parts) {
     // prettier-ignore
+    console.log(`games/${this.uuid}/players/${this.username}${parts ? '/' + parts : ''}`);
     return `games/${this.uuid}/players/${this.username}${parts ? '/' + parts : ''}`;
   }
 }
