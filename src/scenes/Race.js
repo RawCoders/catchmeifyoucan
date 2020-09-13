@@ -106,7 +106,9 @@ export default class Race extends GameScene {
       }
 
       if (this.wasCreatedByMe() && this.players.length === this.gameData.numberOfPlayers) {
-        database.ref("games/" + this.gameData.uuid + "/status").set("counting");
+        setTimeout(() => {
+          database.ref("games/" + this.gameData.uuid + "/status").set("counting");
+        }, 1000);
       }
 
       let waitLabel = this.waitOverlay[1];
@@ -245,7 +247,7 @@ export default class Race extends GameScene {
 
     let waitLabel = this.add
       .text(this.game.scale.width / 2, this.game.scale.height / 2, this.getWaitingText(), {
-        fontSize: "32px",
+        fontSize: "24px",
         color: "#000",
       })
       .setOrigin(0.5, 0.5);
@@ -256,10 +258,16 @@ export default class Race extends GameScene {
 
   getWaitingText() {
     let n = this.gameData.numberOfPlayers - this.players.length;
-    if (n === 0) {
-      return "Game will start soon";
-    }
-    return `Waiting for ${n} more player${n > 1 ? "s" : ""} to join`;
+    return [
+      n > 0 ? `Waiting for ${n} more player${n > 1 ? "s" : ""} to join` : "Game will start soon",
+      "",
+      "Sniper: " + this.gameData.createdBy,
+      "Racers: " +
+        this.players
+          .filter((p) => !p.bullets)
+          .map((p) => p.username)
+          .join(","),
+    ];
   }
 
   setupCounter() {
