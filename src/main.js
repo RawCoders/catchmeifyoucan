@@ -13,7 +13,7 @@ let game = new Phaser.Game({
       // debug: true
     },
   },
-  backgroundColor: '#ffffff'
+  backgroundColor: "#ffffff",
 });
 window.game = game;
 

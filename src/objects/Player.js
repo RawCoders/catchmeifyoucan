@@ -145,8 +145,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       frames: [
         {
           key: "player",
-          frame:
-            "Right_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+          frame: "Right_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
         },
       ],
       repeat: -1,
@@ -158,8 +157,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       frames: [
         {
           key: "player",
-          frame:
-            "Left_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+          frame: "Left_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
         },
       ],
       repeat: -1,
@@ -171,8 +169,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       frames: [
         {
           key: "player",
-          frame:
-            "Back/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+          frame: "Back/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
         },
       ],
       repeat: -1,
