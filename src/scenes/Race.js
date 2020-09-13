@@ -90,17 +90,20 @@ export default class Race extends GameScene {
       let username = snap.key;
       let player = new RealPlayer(this, username, this.gameData.uuid);
       this.players.push(player);
+      this.player = player;
+
       if (this.username === username) {
-        this.player = player;
+        player.setVisible(false);
+      } else {
+        player.setInteractive();
+        player.on("pointerdown", () => {
+          if (player.username !== this.username && this.player.shoot()) {
+            player.die();
+            this.player.incrementScore(10);
+            this.player.showAlert(`You killed ${player.username}!`);
+          }
+        });
       }
-      player.setInteractive();
-      player.on("pointerdown", () => {
-        if (player.username !== this.username && this.player.shoot()) {
-          player.die();
-          this.player.incrementScore(10);
-          this.player.showAlert(`You killed ${player.username}!`);
-        }
-      });
 
       if (this.wasCreatedByMe() && this.players.length === this.gameData.numberOfPlayers) {
         database.ref("games/" + this.gameData.uuid + "/status").set("counting");
