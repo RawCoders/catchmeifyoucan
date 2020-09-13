@@ -4,7 +4,7 @@
 	"scripts": {
 		"start": "env-cmd parcel src/index.html -p 8000",
 		"build": "parcel build src/index.html --out-dir dist",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"deploy": "yarn build && firebase deploy"
 	},
 	"license": "MIT",
 	"devDependencies": {
