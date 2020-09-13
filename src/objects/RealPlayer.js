@@ -47,7 +47,7 @@ export default class RealPlayer extends RealtimePlayer {
 
   showAlert(text) {
     this.scene.rexUI.add.toast({
-        x: this.scene.scale.width - 100,
+        x: this.scene.scale.width - (90 + (text.length * 4)),
         y: this.scene.scale.height - 50,
         background: this.scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, '#dddddd'),
         text: this.scene.add.text(0, 0, '', {

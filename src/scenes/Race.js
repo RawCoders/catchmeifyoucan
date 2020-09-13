@@ -122,6 +122,7 @@ export default class Race extends GameScene {
         if (this.player.shoot()) {
           npc.die();
           this.player.incrementScore(-20);
+          this.player.showAlert('You killed a civilian ☹️');
         }
       });
     });
