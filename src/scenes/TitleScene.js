@@ -28,14 +28,19 @@ export default class TitleScene extends Phaser.Scene {
     createGameText.setInteractive({ useHandCursor: true });
     createGameText.on("pointerdown", () => {
       let username = getUser();
+      let numberOfPlayers = Number(window.prompt("Number of players"));
+      if (isNaN(numberOfPlayers)) {
+        numberOfPlayers = 2;
+      }
+
       let mode = "race";
-      this.createNewGame(username, mode).then((uuid) => {
+      this.createNewGame(username, mode, numberOfPlayers).then((uuid) => {
         window.location.href = `?id=${uuid}`;
       });
     });
   }
 
-  createNewGame(username, mode) {
+  createNewGame(username, mode, numberOfPlayers) {
     let uuid = uuidv4();
     let npcs = this.getNPCs(2, "moveAhead");
     return database
@@ -46,6 +51,7 @@ export default class TitleScene extends Phaser.Scene {
         waitCounter: 5,
         mode,
         createdBy: username,
+        numberOfPlayers,
         players: {
           [username]: {
             sniper: 1,

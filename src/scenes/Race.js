@@ -7,7 +7,7 @@ import NPC from "../objects/NPC";
 import ScoreBoard from "../objects/ScoreBoard";
 
 export default class Race extends GameScene {
-  /** @type {{ createdBy: string; uuid: string; players: Array; status: string; waitCounter: number }} */
+  /** @type {{ createdBy: string; uuid: string; players: Array; status: string; waitCounter: number; numberOfPlayers: number }} */
   gameData;
   /** @type {RealPlayer[]} */
   players;
@@ -86,7 +86,7 @@ export default class Race extends GameScene {
         }
       });
 
-      if (this.wasCreatedByMe() && this.players.length === 3) {
+      if (this.wasCreatedByMe() && this.players.length === this.gameData.numberOfPlayers) {
         database.ref("games/" + this.gameData.uuid + "/status").set("counting");
       }
     });
@@ -191,7 +191,7 @@ export default class Race extends GameScene {
 
   setupWaitOverlay() {
     let overlay = this.add.renderTexture(0, 0, this.game.scale.width, this.game.scale.height);
-    overlay.fill(0x000000, 0.2);
+    overlay.fill(0xdddddd, 1);
 
     let waitLabel = this.add
       .text(this.game.scale.width / 2, this.game.scale.height / 2, "Waiting for players", {
