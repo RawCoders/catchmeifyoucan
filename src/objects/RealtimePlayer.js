@@ -10,10 +10,7 @@ export default class RealtimePlayer extends Player {
       this.moveToY(snap.val() || 0);
     });
     database.ref(this.getPlayerKey("animation")).on("value", (snap) => {
-      if (this.anims.currentAnim) {
-        console.log(this.anims.currentFrame, this.anims.currentAnim)
-      }
-      this.anims.play(snap.val() || "player-walk-right", true);
+      this.anims.play(snap.val() || "player-face-right", true);
     });
   }
   moveRight() {
@@ -38,6 +35,15 @@ export default class RealtimePlayer extends Player {
     let finalY = this.y + this.speed;
     database.ref(this.getPlayerKey("y")).set(finalY);
     database.ref(this.getPlayerKey("animation")).set('player-walk-down');
+  }
+
+  stop() {
+    if (this.anims.currentAnim) {
+      let direction = this.anims.currentAnim.key.split('-').pop()
+      if (["up", "down", "left", "right"].includes(direction)) {
+        database.ref(this.getPlayerKey("animation")).set(`player-face-${direction}`)
+      }
+    }
   }
 
   getPlayerKey(parts) {

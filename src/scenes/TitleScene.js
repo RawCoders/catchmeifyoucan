@@ -11,7 +11,7 @@ export default class TitleScene extends Phaser.Scene {
   preload() {}
 
   create() {
-    this.positions = [100, 200, 300, 400, 500, 600].sort(() => Math.random() - 0.5); // shuffle
+    this.positions = [100, 200, 300, 400, 500].sort(() => Math.random() - 0.5); // shuffle
     this.add
       .text(this.game.scale.width/2, this.game.scale.height/2 - 60, "Catch Me If You Can", {
         fontSize: "32px",

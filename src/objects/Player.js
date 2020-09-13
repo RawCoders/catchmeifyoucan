@@ -98,7 +98,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     });
 
     this.scene.anims.create({
-      key: "player-face-front",
+      key: "player-face-down",
       frames: [
         {
           key: "player",
@@ -117,6 +117,32 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
           key: "player",
           frame:
             "Right_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+        },
+      ],
+      repeat: -1,
+      frameRate: 29,
+    });
+
+    this.scene.anims.create({
+      key: "player-face-left",
+      frames: [
+        {
+          key: "player",
+          frame:
+            "Left_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+        },
+      ],
+      repeat: -1,
+      frameRate: 29,
+    });
+
+    this.scene.anims.create({
+      key: "player-face-up",
+      frames: [
+        {
+          key: "player",
+          frame:
+            "Back/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
         },
       ],
       repeat: -1,

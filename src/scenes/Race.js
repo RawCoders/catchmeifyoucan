@@ -172,7 +172,6 @@ export default class Race extends GameScene {
         overlay.destroy()
         counterRef.off()
       } else {
-        console.log(snap.val(), snap.val().toString(), counter)
         counter.setText(snap.val() || '')
       }
     })
