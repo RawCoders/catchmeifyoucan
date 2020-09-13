@@ -18,22 +18,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.speed = 1;
     this.steps = 0;
     this.createAnimations();
-    this.play("player-face-front");
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
   }
 
   moveToX(x) {
-    let direction = x - this.x > 0 ? "right" : "left";
     this.setX(x);
-    this.anims.play(`player-walk-${direction}`, true);
   }
 
   moveToY(y) {
-    let direction = y - this.y > 0 ? "down" : "up";
     this.setY(y);
-    this.anims.play(`player-walk-${direction}`, true);
   }
 
   moveRight() {
@@ -74,9 +69,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     let middleFrameIndex = Math.ceil(this.anims.currentAnim.frames.length / 2);
     let currentFrameIndex = this.anims.currentFrame.index;
     if (currentFrameIndex === 1 || middleFrameIndex < currentFrameIndex) {
-      this.anims.stopOnFrame(this.anims.currentAnim.frames[0]);
+      this.anims.pause(this.anims.currentAnim.frames[0]);
     } else {
-      this.anims.stopOnFrame(this.anims.currentAnim.frames[middleFrameIndex]);
+      this.anims.pause(this.anims.currentAnim.frames[middleFrameIndex]);
     }
   }
 
@@ -109,6 +104,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
           key: "player",
           frame:
             "Front/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
+        },
+      ],
+      repeat: -1,
+      frameRate: 29,
+    });
+
+    this.scene.anims.create({
+      key: "player-face-right",
+      frames: [
+        {
+          key: "player",
+          frame:
+            "Right_Side/PNG Sequences/Warrior_clothes_1/Walk/0_Warrior_Walk_000.png",
         },
       ],
       repeat: -1,
