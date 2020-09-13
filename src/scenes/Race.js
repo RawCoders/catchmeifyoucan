@@ -40,10 +40,13 @@ export default class Race extends GameScene {
       url: "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js",
       sceneKey: "rexUI",
     });
+    this.load.image("overworld", "Overworld.png");
+    this.load.tilemapTiledJSON("racemap", "race-map.json");
   }
 
   create() {
     super.create();
+    this.createMap();
     this.cursors = this.input.keyboard.createCursorKeys();
     // this.crosshair = this.createCrosshair();
     this.scoreboard = new ScoreBoard(this);
@@ -152,6 +155,17 @@ export default class Race extends GameScene {
     });
 
     this.waitOverlay = this.setupWaitOverlay();
+  }
+
+  createMap() {
+    let map = this.make.tilemap({ key: "racemap" });
+    let tileset = map.addTilesetImage("cmiyc", "overworld");
+    map.createStaticLayer("layer-1-grass", tileset);
+    map.createStaticLayer("layer-2-decoration", tileset);
+    map.createStaticLayer("houses", tileset);
+    map.createStaticLayer("race-track", tileset);
+    map.createStaticLayer("water", tileset);
+    map.createStaticLayer("water-bridge", tileset);
   }
 
   addText(key, val) {
