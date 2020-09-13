@@ -8,7 +8,7 @@ export default class ScoreBoard extends Phaser.GameObjects.Group {
     super(scene);
     this.scene = scene;
     this.textMap = {};
-    this.textObj = this.scene.add.text(0, 0, "", { color: "#000" });
+    this.textObj = this.scene.add.text(10, 10, "", { color: "#000" });
   }
 
   addText(key, string) {
@@ -29,7 +29,7 @@ export default class ScoreBoard extends Phaser.GameObjects.Group {
   }
 
   updateTextObject() {
-    let strings = Object.keys(this.textMap).map((key) => this.textMap[key] + "\n");
+    let strings = Object.keys(this.textMap).map((key) => this.textMap[key]);
     this.textObj.setText(strings);
   }
 }
