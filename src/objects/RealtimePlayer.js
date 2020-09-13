@@ -6,6 +6,7 @@ export default class RealtimePlayer extends Player {
   setupRealtime() {
     database.ref(this.getPlayerKey("movement")).on("value", (snap) => {
       let data = snap.val();
+      if (!data) return;
       this.moveToX(data.x || 0);
       this.moveToY(data.y || 0);
       this.anims.play(data.animation || "player-face-right", true);
@@ -17,7 +18,8 @@ export default class RealtimePlayer extends Player {
       this.updateScore && this.updateScore();
     });
     database.ref(this.getPlayerKey("bullets")).on("value", (snap) => {
-      this.setBullets(snap.val() || 0);
+      this.bullets = snap.val() || 0;
+      this.updateBullets && this.updateBullets();
     });
 
     ["moveRight", "moveLeft", "moveUp", "moveDown", "stop"].forEach((method) => {
@@ -28,7 +30,7 @@ export default class RealtimePlayer extends Player {
 
   updateScore() {}
 
-  setBullets(val) {}
+  updateBullets() {}
 
   moveRight() {
     let finalX = this.x + this.speed;

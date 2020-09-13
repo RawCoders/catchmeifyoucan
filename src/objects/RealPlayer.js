@@ -23,15 +23,13 @@ export default class RealPlayer extends RealtimePlayer {
 
   shoot() {
     if (this.bullets > 0) {
-      this.setBullets(this.bullets - 1);
-      database.ref(this.getPlayerKey("bullets")).set(this.bullets);
+      database.ref(this.getPlayerKey("bullets")).set(this.bullets - 1);
       return true;
     }
     return false;
   }
 
-  setBullets(bullets) {
-    this.bullets = bullets;
+  updateBullets() {
     this.scene.scoreboard.updateText("bullets", `bullets: ${this.bullets}`);
     if (this.bullets === 0) {
       this.scene.scoreboard.removeText("bullets");
