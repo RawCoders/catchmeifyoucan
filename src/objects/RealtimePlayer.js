@@ -4,14 +4,19 @@ import throttle from "lodash.throttle";
 
 export default class RealtimePlayer extends Player {
   setupRealtime() {
-    database.ref(this.getPlayerKey("movement")).on("value", (snap) => {
+    let movement = database.ref(this.getPlayerKey("movement"));
+    movement.on("value", (snap) => {
       let data = snap.val();
       if (!data) return;
-      this.moveToX(data.x || 0);
-      this.moveToY(data.y || 0);
-      this.anims.play(data.animation || "player-face-right", true);
       this.dead = data.dead;
-      this.playDead();
+      if (this.dead) {
+        this.playDead();
+      } else {
+        this.moveToX(data.x || 0);
+        this.moveToY(data.y || 0);
+        this.anims.play(data.animation || "player-face-right", true);
+        movement.off("value");
+      }
     });
     database.ref(this.getPlayerKey("score")).on("value", (snap) => {
       this.score = snap.val() || 0;
