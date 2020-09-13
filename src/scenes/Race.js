@@ -53,6 +53,10 @@ export default class Race extends GameScene {
       return;
     }
 
+    if (this.wasCreatedByMe()) {
+      this.game.canvas.classList.add("crosshair");
+    }
+
     if (!this.wasCreatedByMe()) {
       let value = window.confirm(`Join game as ${this.username}?`);
 
@@ -220,7 +224,7 @@ export default class Race extends GameScene {
 
   getWaitingText() {
     let n = this.gameData.numberOfPlayers - this.players.length;
-    return `Waiting for ${n} more player${n > 1 ? 's' : ''} to join`;
+    return `Waiting for ${n} more player${n > 1 ? "s" : ""} to join`;
   }
 
   setupCounter() {
