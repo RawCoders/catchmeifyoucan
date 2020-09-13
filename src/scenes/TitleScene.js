@@ -11,7 +11,6 @@ export default class TitleScene extends Phaser.Scene {
   preload() {}
 
   create() {
-    this.positions = [100, 200, 300, 400, 500].sort(() => Math.random() - 0.5); // shuffle
     this.add
       .text(this.game.scale.width / 2, this.game.scale.height / 2 - 60, "Catch Me If You Can", {
         fontSize: "32px",
@@ -41,8 +40,16 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   createNewGame(username, mode, numberOfPlayers) {
+    let totalPlayers = numberOfPlayers * 2;
+    let positions = Array.from(Array(totalPlayers))
+      .map((_, i) => i * 50)
+      .sort(() => Math.random() - 0.5);
     let uuid = uuidv4();
-    let npcs = this.getNPCs(2, "moveAhead");
+    let npcs = [];
+    Array.from(Array(numberOfPlayers)).forEach(() => {
+      npcs.push(this.getNPC("moveAhead", positions.pop()));
+    });
+    let playerPosition = positions.pop();
     return database
       .ref(`games/${uuid}`)
       .set({
@@ -52,12 +59,13 @@ export default class TitleScene extends Phaser.Scene {
         mode,
         createdBy: username,
         numberOfPlayers,
+        positions,
         players: {
           [username]: {
             sniper: 1,
             movement: {
               x: 0,
-              y: this.positions.pop(),
+              y: playerPosition,
               animation: "player-face-right",
             },
             bullets: 3,
@@ -70,18 +78,14 @@ export default class TitleScene extends Phaser.Scene {
       });
   }
 
-  getNPCs(count, story) {
-    let npcs = [];
-    Array.from(Array(count)).forEach(() => {
-      npcs.push({
-        movement: {
-          x: 0,
-          y: this.positions.pop(),
-          animation: "player-face-right",
-        },
-        story,
-      });
-    });
-    return npcs;
+  getNPC(story, position) {
+    return {
+      movement: {
+        x: 0,
+        y: position,
+        animation: "player-face-right",
+      },
+      story,
+    };
   }
 }

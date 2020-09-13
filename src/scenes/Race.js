@@ -7,7 +7,7 @@ import NPC from "../objects/NPC";
 import ScoreBoard from "../objects/ScoreBoard";
 
 export default class Race extends GameScene {
-  /** @type {{ createdBy: string; uuid: string; players: Array; status: string; waitCounter: number; numberOfPlayers: number }} */
+  /** @type {{ createdBy: string; uuid: string; players: Array; status: string; waitCounter: number; numberOfPlayers: number; positions: number[] }} */
   gameData;
   /** @type {RealPlayer[]} */
   players;
@@ -29,6 +29,7 @@ export default class Race extends GameScene {
   init(data) {
     this.gameData = data;
     this.status = this.gameData.status;
+    this.positions = this.gameData.positions;
   }
 
   preload() {
@@ -59,14 +60,19 @@ export default class Race extends GameScene {
         this.username = getUser(true, "This username is already taken. Type another one.");
       }
 
+      let position = this.positions.pop();
+
       if (value) {
-        database.ref("games/" + this.gameData.uuid + "/players/" + this.username).set({
-          racer: 1,
-          movement: {
-            x: 0,
-            y: Phaser.Math.Between(100, 600),
-            animation: "player-face-right",
+        database.ref("games/" + this.gameData.uuid).update({
+          ["players/" + this.username]: {
+            racer: 1,
+            movement: {
+              x: 0,
+              y: position,
+              animation: "player-face-right",
+            },
           },
+          positions: this.positions,
         });
       }
     }
@@ -104,6 +110,10 @@ export default class Race extends GameScene {
         this.waitOverlay.forEach((child) => child.destroy());
         this.startCounter();
       }
+    });
+
+    database.ref(`games/${this.gameData.uuid}/positions`).on("value", (snap) => {
+      this.positions = snap.val();
     });
 
     this.waitOverlay = this.setupWaitOverlay();
