@@ -41,7 +41,7 @@ export default {
       },
       {
         action: "stop",
-        steps: 200,
+        steps: 50,
       },
       {
         action: "moveRight",
@@ -50,4 +50,47 @@ export default {
     ],
     onBoundaryCollision: () => {},
   },
+  Jitter: {
+    movements: [
+      {
+        action: "moveRight",
+        steps: 10,
+      },
+      {
+        action: "stop",
+        steps: 50,
+      },
+      {
+        action: "moveRight",
+        steps: 100,
+      },
+      ...getTurnMovement(),
+    ],
+    onBoundaryCollision: () => {},
+  },
 };
+
+function getTurnMovement() {
+  return [
+    {
+      animation: "player-face-right",
+      steps: 5,
+    },
+    {
+      animation: "player-face-up",
+      steps: 5,
+    },
+    {
+      animation: "player-face-left",
+      steps: 5,
+    },
+    {
+      animation: "player-face-down",
+      steps: 5,
+    },
+    {
+      animation: "player-face-right",
+      steps: 5,
+    },
+  ];
+}

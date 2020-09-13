@@ -35,6 +35,12 @@ export default class RealtimePlayer extends Player {
 
   updateScore() {}
 
+  playAnimation(animation) {
+    database.ref(this.getPlayerKey("movement")).update({
+      animation: animation,
+    });
+  }
+
   updateBullets() {}
 
   moveRight() {

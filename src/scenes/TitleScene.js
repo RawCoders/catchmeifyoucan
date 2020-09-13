@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { Math } from "phaser";
 import database from "../database";
 import { v4 as uuidv4 } from "uuid";
 import { getUser } from "../getUser";
@@ -43,11 +43,11 @@ export default class TitleScene extends Phaser.Scene {
     let totalPlayers = numberOfPlayers * 2;
     let positions = Array.from(Array(totalPlayers))
       .map((_, i) => (i + 1) * 50 + 100)
-      .sort(() => Math.random() - 0.5);
+      .sort(() => window.Math.random() - 0.5);
     let uuid = uuidv4();
     let npcs = [];
     Array.from(Array(numberOfPlayers)).forEach(() => {
-      npcs.push(this.getNPC("moveAhead", positions.pop()));
+      npcs.push(this.getNPC("Jitter", positions.pop()));
     });
     let playerPosition = positions.pop();
     return database
@@ -86,6 +86,7 @@ export default class TitleScene extends Phaser.Scene {
         animation: "player-face-right",
       },
       story,
+      delay: Phaser.Math.Between(0, 5) * 10
     };
   }
 }
