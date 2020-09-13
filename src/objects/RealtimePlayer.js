@@ -11,11 +11,11 @@ export default class RealtimePlayer extends Player {
       this.dead = data.dead;
       if (this.dead) {
         this.playDead();
+        movement.off("value");
       } else {
         this.moveToX(data.x || 0);
         this.moveToY(data.y || 0);
         this.anims.play(data.animation || "player-face-right", true);
-        movement.off("value");
       }
     });
     database.ref(this.getPlayerKey("score")).on("value", (snap) => {
