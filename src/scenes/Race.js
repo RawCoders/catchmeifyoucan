@@ -109,7 +109,7 @@ export default class Race extends GameScene {
       if (this.wasCreatedByMe() && this.players.length === this.gameData.numberOfPlayers) {
         setTimeout(() => {
           database.ref("games/" + this.gameData.uuid + "/status").set("counting");
-        }, 1000);
+        }, 2000);
       }
 
       let waitLabel = this.waitOverlay[1];
@@ -123,14 +123,16 @@ export default class Race extends GameScene {
       let npc = new NPC(this, snap.key, this.gameData.uuid, data.story);
       this.npcs.push(npc);
 
-      npc.setInteractive();
-      npc.on("pointerdown", () => {
-        if (this.player.shoot()) {
-          npc.die();
-          this.player.incrementScore(-20);
-          this.player.showAlert("You killed a civilian ☹️");
-        }
-      });
+      if (this.wasCreatedByMe()) {
+        npc.setInteractive();
+        npc.on("pointerdown", () => {
+          if (this.player.shoot()) {
+            npc.die();
+            this.player.incrementScore(-20);
+            this.player.showAlert("You killed a civilian ☹️");
+          }
+        });
+      }
     });
 
     database.ref(`games/${this.gameData.uuid}/status`).on("value", (snap) => {
