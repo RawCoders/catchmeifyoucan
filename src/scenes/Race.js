@@ -95,6 +95,8 @@ export default class Race extends GameScene {
       if (this.wasCreatedByMe() && this.players.length === this.gameData.numberOfPlayers) {
         database.ref("games/" + this.gameData.uuid + "/status").set("counting");
       }
+
+      this.waitOverlay[1].setText(this.getWaitingText());
     });
 
     database.ref(`games/${this.gameData.uuid}/npcs`).on("child_added", (snap) => {
@@ -202,15 +204,23 @@ export default class Race extends GameScene {
   setupWaitOverlay() {
     let overlay = this.add.renderTexture(0, 0, this.game.scale.width, this.game.scale.height);
     overlay.fill(0xdddddd, 1);
+    overlay.setDepth(900);
 
     let waitLabel = this.add
-      .text(this.game.scale.width / 2, this.game.scale.height / 2, "Waiting for players", {
+      .text(this.game.scale.width / 2, this.game.scale.height / 2, this.getWaitingText(), {
         fontSize: "32px",
         color: "#000",
       })
       .setOrigin(0.5, 0.5);
+    waitLabel.setDepth(901);
+    this.waitLabel = waitLabel;
 
     return [overlay, waitLabel];
+  }
+
+  getWaitingText() {
+    let n = this.gameData.numberOfPlayers - this.players.length;
+    return `Waiting for ${n} more player${n > 1 ? 's' : ''} to join`;
   }
 
   setupCounter() {
