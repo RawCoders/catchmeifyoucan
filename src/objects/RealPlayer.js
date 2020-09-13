@@ -35,6 +35,8 @@ export default class RealPlayer extends RealtimePlayer {
     if (this.bullets > 0) {
       database.ref(this.getPlayerKey("bullets")).set(this.bullets - 1);
       return true;
+    } else {
+      this.showAlert('You are out of bullets!');
     }
     return false;
   }
