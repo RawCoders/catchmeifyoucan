@@ -13,14 +13,14 @@ export default class TitleScene extends Phaser.Scene {
   create() {
     this.positions = [100, 200, 300, 400, 500].sort(() => Math.random() - 0.5); // shuffle
     this.add
-      .text(this.game.scale.width/2, this.game.scale.height/2 - 60, "Catch Me If You Can", {
+      .text(this.game.scale.width / 2, this.game.scale.height / 2 - 60, "Catch Me If You Can", {
         fontSize: "32px",
         color: "#000",
       })
       .setOrigin(0.5, 0);
 
     let createGameText = this.add
-      .text(this.game.scale.width/2, this.game.scale.height/2, "Death Race", {
+      .text(this.game.scale.width / 2, this.game.scale.height / 2, "Death Race", {
         fontSize: "16px",
         color: "#000",
       })
@@ -37,25 +37,27 @@ export default class TitleScene extends Phaser.Scene {
 
   createNewGame(username, mode) {
     let uuid = uuidv4();
-    let npcs = this.getNPCs(2, 'moveAhead');
+    let npcs = this.getNPCs(2, "moveAhead");
     return database
       .ref(`games/${uuid}`)
       .set({
         uuid: uuid,
-        status: "not-started",
+        status: "waiting-for-players",
+        waitCounter: 5,
         mode,
         createdBy: username,
         players: {
           [username]: {
             sniper: 1,
-            x: 0,
-            y: this.positions.pop(),
+            movement: {
+              x: 0,
+              y: this.positions.pop(),
+              animation: "player-face-right",
+            },
+            bullets: 3,
           },
         },
-        gameDetails: {
-          waitingForPlayers: true
-        },
-        npcs: npcs
+        npcs: npcs,
       })
       .then(() => {
         return uuid;
@@ -63,10 +65,17 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   getNPCs(count, story) {
-    let npcs = []
+    let npcs = [];
     Array.from(Array(count)).forEach(() => {
-      npcs.push({x: 0, y: this.positions.pop(), story, animation: 'player-face-right'})
-    })
-    return npcs
+      npcs.push({
+        movement: {
+          x: 0,
+          y: this.positions.pop(),
+          animation: "player-face-right",
+        },
+        story,
+      });
+    });
+    return npcs;
   }
 }

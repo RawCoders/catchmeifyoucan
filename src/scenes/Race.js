@@ -4,15 +4,20 @@ import database from "../database";
 import { getUser } from "../getUser";
 import RealPlayer from "../objects/RealPlayer";
 import NPC from "../objects/NPC";
+import ScoreBoard from "../objects/ScoreBoard";
 
 export default class Race extends GameScene {
-  /** @type {{ createdBy: string; uuid: string; players: Array }} */
+  /** @type {{ createdBy: string; uuid: string; players: Array; status: string; waitCounter: number }} */
   gameData;
   /** @type {RealPlayer[]} */
   players;
   /** @type {RealPlayer} */
   player;
   cursors;
+  /** @type {Phaser.GameObjects.Sprite} */
+  crosshair;
+  /** @type {Phaser.GameObjects.Group} */
+  waitOverlay;
 
   constructor() {
     super("race-scene");
@@ -23,82 +28,128 @@ export default class Race extends GameScene {
    */
   init(data) {
     this.gameData = data;
+    this.status = this.gameData.status;
+  }
+
+  preload() {
+    super.preload();
+    this.load.image("crosshair", "crosshair.png");
   }
 
   create() {
     super.create();
     this.cursors = this.input.keyboard.createCursorKeys();
+    // this.crosshair = this.createCrosshair();
+    this.scoreboard = new ScoreBoard(this);
+    this.scoreboard.addText("mode", "game mode: race");
+
     this.players = [];
     this.username = getUser();
     this.npcs = [];
 
-    if (this.gameData.gameDetails && this.gameData.gameDetails.gameStarted && !this.gameData.players[this.username]) {
-        alert("The game has begun!")
-        return
+    if (this.gameData.status === "started" && !this.gameData.players[this.username]) {
+      alert("The game has already begun!");
+      return;
     }
     if (!this.gameData.players[this.username]) {
       let value = window.confirm("Join Game?");
       if (value) {
-        database
-          .ref("games/" + this.gameData.uuid + "/players/" + this.username)
-          .set({
-            racer: 1,
+        database.ref("games/" + this.gameData.uuid + "/players/" + this.username).set({
+          racer: 1,
+          movement: {
             x: 0,
             y: Phaser.Math.Between(100, 600),
-          });
+            animation: "player-face-right",
+          },
+        });
       }
     }
 
-    database
-      .ref(`games/${this.gameData.uuid}/players`)
-      .on("child_added", (snap) => {
-        let username = snap.key;
-        this.players.push(new RealPlayer(this, username, this.gameData.uuid));
-        if (this.players.length === 2) {
-          database.ref("games/" + this.gameData.uuid + "/gameDetails/waitingForPlayers").set(false)
+    database.ref(`games/${this.gameData.uuid}/players`).on("child_added", (snap) => {
+      let username = snap.key;
+      let player = new RealPlayer(this, username, this.gameData.uuid);
+      this.players.push(player);
+      if (this.username === username) {
+        this.player = player;
+      }
+      player.setInteractive();
+      player.on("pointerdown", () => {
+        if (player.username !== this.username && this.player.shoot()) {
+          player.die();
+          this.player.incrementScore(10);
         }
-        this.findPlayer();
-      })
-
-    database
-      .ref(`games/${this.gameData.uuid}/npcs`)
-      .on("child_added", (snap) => {
-        let data = snap.val();
-        this.npcs.push(new NPC(this, snap.key, this.gameData.uuid, data.story));
       });
+    });
 
-    database
-      .ref(`games/${this.gameData.uuid}/gameDetails/gameStarted`)
-      .on("value", (snap) => {
-        this.gameStarted = snap.val()
-      })
-    this.setupWait()
+    database.ref(`games/${this.gameData.uuid}/npcs`).on("child_added", (snap) => {
+      let data = snap.val();
+      let npc = new NPC(this, snap.key, this.gameData.uuid, data.story);
+      this.npcs.push(npc);
+    });
 
+    database.ref(`games/${this.gameData.uuid}/status`).on("value", (snap) => {
+      this.status = snap.val();
+
+      if (this.status === "started") {
+        // this.waitOverlay.getChildren().forEach((child) => child.destroy());
+        this.waitOverlay.destroy();
+        this.startCounter();
+      }
+    });
+
+    this.waitOverlay = this.setupWaitOverlay();
   }
 
-  findPlayer() {
-    if (this.player) return;
-    this.player = this.players.find(
-      (player) => player.username === this.username
-    );
+  createCrosshair() {
+    let crosshair = this.add.sprite(400, 300, "crosshair");
+    crosshair.setScale(0.25);
+    this.input.on("pointerdown", () => this.input.mouse.requestPointerLock());
+
+    this.input.on("pointermove", (pointer) => {
+      if (this.input.mouse.locked) {
+        crosshair.x += pointer.movementX;
+        crosshair.y += pointer.movementY;
+        crosshair.x = Phaser.Math.Wrap(crosshair.x, 0, this.game.renderer.width);
+        crosshair.y = Phaser.Math.Wrap(crosshair.y, 0, this.game.renderer.height);
+      }
+    });
+
+    this.input.on("pointerdown", (pointer) => {
+      if (this.input.mouse.locked) {
+        this.players.forEach((player) => {
+          let bounds = player.getBounds();
+          console.log(bounds, pointer.position);
+          if (bounds.contains(pointer.position.x, pointer.position.y)) {
+            console.log("player hit with crosshair");
+          }
+        });
+      }
+    });
+
+    this.input.keyboard.on("keydown-Q", () => {
+      if (this.input.mouse.locked) {
+        this.input.mouse.releasePointerLock();
+      }
+    });
+
+    crosshair.setDepth(1000);
+    return crosshair;
   }
 
   startCounter() {
-    if (this.wasCreatedByMe() && !(this.gameData.gameDetails && this.gameData.gameDetails.counter === 0)) {
-      let time = 5;
+    if (this.wasCreatedByMe()) {
+      let waitCounter = this.gameData.waitCounter;
       let timer = setInterval(() => {
-        if (time < 0) {
+        if (waitCounter < 0) {
           clearInterval(timer);
-          database
-            .ref("games/" + this.gameData.uuid + "/gameDetails/gameStarted").set(true)
+          database.ref("games/" + this.gameData.uuid + "/status").set("started");
         } else {
-          database
-            .ref("games/" + this.gameData.uuid + "/gameDetails/counter").set(time)
-          time--;
+          database.ref("games/" + this.gameData.uuid + "/waitCounter").set(waitCounter);
+          waitCounter--;
         }
-      }, 1000)
+      }, 1000);
     }
-    this.setupCounter()
+    this.setupCounter();
   }
 
   wasCreatedByMe() {
@@ -106,12 +157,13 @@ export default class Race extends GameScene {
   }
 
   update() {
-    if (!this.gameStarted) {
-      return
+    if (this.gameData.status !== "started") {
+      return;
     }
     if (this.wasCreatedByMe()) {
-      this.npcs.forEach(npc => npc.playStory());
+      this.npcs.forEach((npc) => npc.playStory());
     }
+
     if (!this.player) {
       return;
     }
@@ -128,52 +180,50 @@ export default class Race extends GameScene {
     }
   }
 
-  setupWait() {
+  setupWaitOverlay() {
+    let group = this.add.group();
     let overlay = this.add.renderTexture(0, 0, this.game.scale.width, this.game.scale.height);
     overlay.fill(0x000000, 0.2);
+    group.add(overlay);
+
     let waitLabel = this.add
-        .text(this.game.scale.width/2, this.game.scale.height/2, "Waiting for players", {
-          fontSize: "32px",
-          color: "#000",
-        })
-        .setOrigin(0.5, 0.5);
-    database
-      .ref("games/" + this.gameData.uuid + "/gameDetails/waitingForPlayers")
-      .on("value", (snap) => {
-        if (!snap.val()) {
-          waitLabel.destroy()
-          overlay.destroy()
-          this.startCounter()
-        }
+      .text(this.game.scale.width / 2, this.game.scale.height / 2, "Waiting for players", {
+        fontSize: "32px",
+        color: "#000",
       })
+      .setOrigin(0.5, 0.5);
+    group.add(waitLabel);
+
+    return group;
   }
 
   setupCounter() {
     let overlay = this.add.renderTexture(0, 0, this.game.scale.width, this.game.scale.height);
     overlay.fill(0x000000, 0.2);
     let label = this.add
-        .text(this.game.scale.width/2, this.game.scale.height/2 - 60, "Game Starts in", {
-          fontSize: "32px",
-          color: "#000",
-        })
-        .setOrigin(0.5, 0.5);
+      .text(this.game.scale.width / 2, this.game.scale.height / 2 - 60, "Game Starts in", {
+        fontSize: "32px",
+        color: "#000",
+      })
+      .setOrigin(0.5, 0.5);
 
     let counter = this.add
-        .text(this.game.scale.width/2, this.game.scale.height/2, "-", {
-          fontSize: "60px",
-          color: "#000",
-        })
-        .setOrigin(0.5, 0.5);
-    let counterRef = database.ref("games/" + this.gameData.uuid + "/gameDetails/counter")
+      .text(this.game.scale.width / 2, this.game.scale.height / 2, "-", {
+        fontSize: "60px",
+        color: "#000",
+      })
+      .setOrigin(0.5, 0.5);
+    let counterRef = database.ref("games/" + this.gameData.uuid + "/waitCounter");
     counterRef.on("value", (snap) => {
-      if (snap.val() !== null && snap.val() <= 0) {
+      const counterValue = snap.val();
+      if (counterValue <= 0) {
         label.destroy();
-        counter.destroy()
-        overlay.destroy()
-        counterRef.off()
+        counter.destroy();
+        overlay.destroy();
+        counterRef.off();
       } else {
-        counter.setText(snap.val() || '')
+        counter.setText(counterValue || "");
       }
-    })
+    });
   }
 }
