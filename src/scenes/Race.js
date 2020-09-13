@@ -92,7 +92,7 @@ export default class Race extends GameScene {
       this.players.push(player);
       this.player = player;
 
-      if (this.username === username) {
+      if (this.gameData.createdBy === username) {
         player.setVisible(false);
       }
       if (this.wasCreatedByMe()) {
