@@ -31,25 +31,25 @@ export default class RealtimePlayer extends Player {
   moveRight() {
     let finalX = this.x + this.speed;
     database.ref(this.getPlayerKey("movement/x")).set(finalX);
-    database.ref(this.getPlayerKey("movment/animation")).set("player-walk-right");
+    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-right");
   }
 
   moveLeft() {
     let finalX = this.x - this.speed;
     database.ref(this.getPlayerKey("movement/x")).set(finalX);
-    database.ref(this.getPlayerKey("movment/animation")).set("player-walk-left");
+    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-left");
   }
 
   moveUp() {
     let finalY = this.y - this.speed;
     database.ref(this.getPlayerKey("movement/y")).set(finalY);
-    database.ref(this.getPlayerKey("movment/animation")).set("player-walk-up");
+    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-up");
   }
 
   moveDown() {
     let finalY = this.y + this.speed;
     database.ref(this.getPlayerKey("movement/y")).set(finalY);
-    database.ref(this.getPlayerKey("movment/animation")).set("player-walk-down");
+    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-down");
   }
 
   stop() {
