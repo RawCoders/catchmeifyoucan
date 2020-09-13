@@ -42,7 +42,7 @@ export default class TitleScene extends Phaser.Scene {
   createNewGame(username, mode, numberOfPlayers) {
     let totalPlayers = numberOfPlayers * 2;
     let positions = Array.from(Array(totalPlayers))
-      .map((_, i) => i * 50)
+      .map((_, i) => (i + 1) * 50 + 100)
       .sort(() => Math.random() - 0.5);
     let uuid = uuidv4();
     let npcs = [];
