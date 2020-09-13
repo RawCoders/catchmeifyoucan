@@ -19,7 +19,7 @@ export default class TitleScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     let createGameText = this.add
-      .text(this.game.scale.width / 2, this.game.scale.height / 2, "Death Race", {
+      .text(this.game.scale.width / 2, this.game.scale.height / 2, "Start a Death Race game", {
         fontSize: "16px",
         color: "#000",
       })
