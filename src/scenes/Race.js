@@ -126,7 +126,7 @@ export default class Race extends GameScene {
 
     database.ref(`games/${this.gameData.uuid}/npcs`).on("child_added", (snap) => {
       let data = snap.val();
-      let npc = new NPC(this, snap.key, this.gameData.uuid, data.story);
+      let npc = new NPC(this, snap.key, this.gameData.uuid, data.story, data.delay);
       this.npcs.push(npc);
 
       if (this.wasCreatedByMe()) {
@@ -222,7 +222,10 @@ export default class Race extends GameScene {
       let timer = setInterval(() => {
         if (waitCounter < 0) {
           clearInterval(timer);
-          database.ref("games/" + this.gameData.uuid + "/status").set("started");
+          if (this.wasCreatedByMe()) {
+            this.setupResetButton();
+            database.ref("games/" + this.gameData.uuid + "/status").set("started");
+          }
         } else {
           database.ref("games/" + this.gameData.uuid + "/waitCounter").set(waitCounter);
           waitCounter--;
@@ -230,6 +233,21 @@ export default class Race extends GameScene {
       }, 1000);
     }
     this.setupCounter();
+  }
+
+  setupResetButton() {
+    let gameData = JSON.parse(JSON.stringify(this.gameData))
+    let resetButton = this.add
+      .text(this.game.scale.width - 50 , 10, "Restart Round", {
+        fontSize: "12px",
+        color: "#000",
+      })
+      .setOrigin(0.5, 0);
+    resetButton.setInteractive({ useHandCursor: true });
+    resetButton.on("pointerdown", () => {
+      database.ref("games/" + this.gameData.uuid).set(gameData)
+      resetButton.destroy()
+    });
   }
 
   wasCreatedByMe() {
