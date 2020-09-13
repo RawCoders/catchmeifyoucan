@@ -7,32 +7,29 @@ export default class ScoreBoard extends Phaser.GameObjects.Group {
   constructor(scene) {
     super(scene);
     this.scene = scene;
-    this.offset = 0;
     this.textMap = {};
+    this.textObj = this.scene.add.text(0, 0, "", { color: "#000" });
   }
 
-  /**
-   * @param {string} key
-   * @param {string} string
-   */
   addText(key, string) {
-    let textObj = this.scene.add.text(0, this.offset, string, { color: "#000" });
-    this.add(textObj);
-    this.textMap[key] = textObj;
-    this.offset += 20;
+    this.textMap[key] = string;
+    this.updateTextObject();
   }
 
   updateText(key, string) {
-    let textObj = this.textMap[key];
-    if (!textObj) return;
-
-    textObj.text = string;
-    textObj.update();
+    if (key in this.textMap) {
+      this.textMap[key] = string;
+      this.updateTextObject();
+    }
   }
 
   removeText(key) {
-    let textObj = this.textMap[key];
-    if (!textObj) return;
-    textObj.destroy();
+    delete this.textMap[key];
+    this.updateTextObject();
+  }
+
+  updateTextObject() {
+    let strings = Object.keys(this.textMap).map((key) => this.textMap[key] + "\n");
+    this.textObj.setText(strings);
   }
 }

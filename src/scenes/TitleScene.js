@@ -68,7 +68,7 @@ export default class TitleScene extends Phaser.Scene {
               y: playerPosition,
               animation: "player-face-right",
             },
-            bullets: 3,
+            bullets: numberOfPlayers,
           },
         },
         npcs: npcs,

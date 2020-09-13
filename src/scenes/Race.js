@@ -100,13 +100,24 @@ export default class Race extends GameScene {
         database.ref("games/" + this.gameData.uuid + "/status").set("counting");
       }
 
-      this.waitOverlay[1].setText(this.getWaitingText());
+      let waitLabel = this.waitOverlay[1];
+      if (waitLabel.visible) {
+        waitLabel.setText(this.getWaitingText());
+      }
     });
 
     database.ref(`games/${this.gameData.uuid}/npcs`).on("child_added", (snap) => {
       let data = snap.val();
       let npc = new NPC(this, snap.key, this.gameData.uuid, data.story);
       this.npcs.push(npc);
+
+      npc.setInteractive();
+      npc.on("pointerdown", () => {
+        if (this.player.shoot()) {
+          npc.die();
+          this.player.incrementScore(-20);
+        }
+      });
     });
 
     database.ref(`games/${this.gameData.uuid}/status`).on("value", (snap) => {
@@ -123,6 +134,18 @@ export default class Race extends GameScene {
     });
 
     this.waitOverlay = this.setupWaitOverlay();
+  }
+
+  addText(key, val) {
+    this.scoreboard.addText(key, val);
+  }
+
+  updateText(key, val) {
+    this.scoreboard.updateText(key, val);
+  }
+
+  removeText(key) {
+    this.scoreboard.removeText(key);
   }
 
   createCrosshair() {
@@ -217,13 +240,15 @@ export default class Race extends GameScene {
       })
       .setOrigin(0.5, 0.5);
     waitLabel.setDepth(901);
-    this.waitLabel = waitLabel;
 
     return [overlay, waitLabel];
   }
 
   getWaitingText() {
     let n = this.gameData.numberOfPlayers - this.players.length;
+    if (n === 0) {
+      return "Game will start soon";
+    }
     return `Waiting for ${n} more player${n > 1 ? "s" : ""} to join`;
   }
 
