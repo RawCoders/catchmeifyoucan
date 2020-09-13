@@ -35,6 +35,11 @@ export default class Race extends GameScene {
   preload() {
     super.preload();
     this.load.image("crosshair", "crosshair.png");
+    this.load.scenePlugin({
+        key: 'rexuiplugin',
+        url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js',
+        sceneKey: 'rexUI'
+    });
   }
 
   create() {

@@ -36,6 +36,23 @@ export default class RealPlayer extends RealtimePlayer {
     }
   }
 
+  showAlert(text) {
+    this.scene.rexUI.add.toast({
+        x: this.scene.scale.width - 100,
+        y: this.scene.scale.height - 50,
+        background: this.scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, '#dddddd'),
+        text: this.scene.add.text(0, 0, '', {
+            fontSize: '16px'
+        }),
+        space: {
+            left: 20,
+            right: 20,
+            top: 10,
+            bottom: 10,
+        },
+    }).show(text)
+  }
+
   getPlayerKey(parts) {
     // prettier-ignore
     return `games/${this.uuid}/players/${this.username}${parts ? "/" + parts : ""}`;
