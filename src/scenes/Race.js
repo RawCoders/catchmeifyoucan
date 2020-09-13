@@ -90,11 +90,14 @@ export default class Race extends GameScene {
       let username = snap.key;
       let player = new RealPlayer(this, username, this.gameData.uuid);
       this.players.push(player);
-      this.player = player;
 
+      if (this.username === username) {
+        this.player = player;
+      }
       if (this.gameData.createdBy === username) {
         player.setVisible(false);
       }
+
       if (this.wasCreatedByMe()) {
         player.setInteractive();
         player.on("pointerdown", () => {
@@ -230,6 +233,11 @@ export default class Race extends GameScene {
     if (!this.player) {
       return;
     }
+
+    if (this.wasCreatedByMe()) {
+      return;
+    }
+
     if (this.cursors.right.isDown) {
       this.player.moveRight();
     } else if (this.cursors.left.isDown) {
