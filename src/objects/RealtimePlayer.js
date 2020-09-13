@@ -9,6 +9,8 @@ export default class RealtimePlayer extends Player {
       this.moveToX(data.x || 0);
       this.moveToY(data.y || 0);
       this.anims.play(data.animation || "player-face-right", true);
+      this.dead = data.dead;
+      this.playDead();
     });
     database.ref(this.getPlayerKey("score")).on("value", (snap) => {
       this.score = snap.val() || 0;
@@ -30,26 +32,34 @@ export default class RealtimePlayer extends Player {
 
   moveRight() {
     let finalX = this.x + this.speed;
-    database.ref(this.getPlayerKey("movement/x")).set(finalX);
-    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-right");
+    database.ref(this.getPlayerKey("movement")).update({
+      x: finalX,
+      animation: "player-walk-right",
+    });
   }
 
   moveLeft() {
     let finalX = this.x - this.speed;
-    database.ref(this.getPlayerKey("movement/x")).set(finalX);
-    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-left");
+    database.ref(this.getPlayerKey("movement")).update({
+      x: finalX,
+      animation: "player-walk-left",
+    });
   }
 
   moveUp() {
     let finalY = this.y - this.speed;
-    database.ref(this.getPlayerKey("movement/y")).set(finalY);
-    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-up");
+    database.ref(this.getPlayerKey("movement")).update({
+      y: finalY,
+      animation: "player-walk-up",
+    });
   }
 
   moveDown() {
     let finalY = this.y + this.speed;
-    database.ref(this.getPlayerKey("movement/y")).set(finalY);
-    database.ref(this.getPlayerKey("movement/animation")).set("player-walk-down");
+    database.ref(this.getPlayerKey("movement")).update({
+      y: finalY,
+      animation: "player-walk-down",
+    });
   }
 
   stop() {
@@ -59,6 +69,10 @@ export default class RealtimePlayer extends Player {
         database.ref(this.getPlayerKey("movement/animation")).set(`player-face-${direction}`);
       }
     }
+  }
+
+  die() {
+    database.ref(this.getPlayerKey("movement/dead")).set(true);
   }
 
   getPlayerKey(parts) {

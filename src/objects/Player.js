@@ -81,8 +81,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  die() {
-    this.dead = true;
+  playDead() {
+    if (!this.dead) return;
     let dir = String(this.anims.currentFrame.textureFrame).split("/")[0];
     let direction = {
       Left_Side: "left",
