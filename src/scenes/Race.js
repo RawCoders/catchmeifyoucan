@@ -94,7 +94,8 @@ export default class Race extends GameScene {
 
       if (this.username === username) {
         player.setVisible(false);
-      } else {
+      }
+      if (this.wasCreatedByMe()) {
         player.setInteractive();
         player.on("pointerdown", () => {
           if (player.username !== this.username && this.player.shoot()) {
