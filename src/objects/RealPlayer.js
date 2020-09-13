@@ -1,5 +1,6 @@
 import RealtimePlayer from "./RealtimePlayer";
 import database from "../database";
+import { getUser } from "../getUser";
 
 export default class RealPlayer extends RealtimePlayer {
   /**
@@ -46,6 +47,8 @@ export default class RealPlayer extends RealtimePlayer {
   }
 
   showAlert(text) {
+    let username = getUser();
+    if (this.username !== username) return;
     this.scene.rexUI.add.toast({
         x: this.scene.scale.width - (90 + (text.length * 4)),
         y: this.scene.scale.height - 50,

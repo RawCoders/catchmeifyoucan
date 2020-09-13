@@ -36,9 +36,9 @@ export default class Race extends GameScene {
     super.preload();
     this.load.image("crosshair", "crosshair.png");
     this.load.scenePlugin({
-        key: 'rexuiplugin',
-        url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js',
-        sceneKey: 'rexUI'
+      key: "rexuiplugin",
+      url: "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js",
+      sceneKey: "rexUI",
     });
   }
 
@@ -122,7 +122,7 @@ export default class Race extends GameScene {
         if (this.player.shoot()) {
           npc.die();
           this.player.incrementScore(-20);
-          this.player.showAlert('You killed a civilian ☹️');
+          this.player.showAlert("You killed a civilian ☹️");
         }
       });
     });
