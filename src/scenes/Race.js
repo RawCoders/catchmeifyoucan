@@ -16,7 +16,7 @@ export default class Race extends GameScene {
   cursors;
   /** @type {Phaser.GameObjects.Sprite} */
   crosshair;
-  /** @type {Phaser.GameObjects.Group} */
+  /** @type {any[]} */
   waitOverlay;
 
   constructor() {
@@ -47,7 +47,7 @@ export default class Race extends GameScene {
     this.username = getUser();
     this.npcs = [];
 
-    if (this.gameData.status === "started" && !this.gameData.players[this.username]) {
+    if (this.status === "started" && !this.gameData.players[this.username]) {
       alert("The game has already begun!");
       return;
     }
@@ -79,6 +79,10 @@ export default class Race extends GameScene {
           this.player.incrementScore(10);
         }
       });
+
+      if (this.players.length === 2) {
+        database.ref("games/" + this.gameData.uuid + "/status").set("counting");
+      }
     });
 
     database.ref(`games/${this.gameData.uuid}/npcs`).on("child_added", (snap) => {
@@ -90,9 +94,8 @@ export default class Race extends GameScene {
     database.ref(`games/${this.gameData.uuid}/status`).on("value", (snap) => {
       this.status = snap.val();
 
-      if (this.status === "started") {
-        // this.waitOverlay.getChildren().forEach((child) => child.destroy());
-        this.waitOverlay.destroy();
+      if (this.status === "counting") {
+        this.waitOverlay.forEach((child) => child.destroy());
         this.startCounter();
       }
     });
@@ -157,7 +160,7 @@ export default class Race extends GameScene {
   }
 
   update() {
-    if (this.gameData.status !== "started") {
+    if (this.status !== "started") {
       return;
     }
     if (this.wasCreatedByMe()) {
@@ -181,10 +184,8 @@ export default class Race extends GameScene {
   }
 
   setupWaitOverlay() {
-    let group = this.add.group();
     let overlay = this.add.renderTexture(0, 0, this.game.scale.width, this.game.scale.height);
     overlay.fill(0x000000, 0.2);
-    group.add(overlay);
 
     let waitLabel = this.add
       .text(this.game.scale.width / 2, this.game.scale.height / 2, "Waiting for players", {
@@ -192,9 +193,8 @@ export default class Race extends GameScene {
         color: "#000",
       })
       .setOrigin(0.5, 0.5);
-    group.add(waitLabel);
 
-    return group;
+    return [overlay, waitLabel];
   }
 
   setupCounter() {
