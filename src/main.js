@@ -5,7 +5,7 @@ import database from "./database";
 
 let game = new Phaser.Game({
   type: Phaser.AUTO,
-  width: 800,
+  width: 1200,
   height: 600,
   physics: {
     default: "arcade",
@@ -15,7 +15,7 @@ let game = new Phaser.Game({
   },
   backgroundColor: '#ffffff'
 });
-// window.game = game;
+window.game = game;
 
 game.scene.add("title-scene", new TitleScene());
 game.scene.add("race-scene", new Race());
