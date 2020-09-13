@@ -2,6 +2,8 @@ import RealtimePlayer from "./RealtimePlayer";
 import database from "../database";
 import { getUser } from "../getUser";
 
+let username = getUser();
+
 export default class RealPlayer extends RealtimePlayer {
   /**
    * @param {import('../scenes/Race.js')} scene
@@ -15,11 +17,9 @@ export default class RealPlayer extends RealtimePlayer {
     this.score = 0;
     this.bullets = 0;
     this.scene.addText(this.username, `${username}: 0`);
-    database.ref(this.getPlayerKey("sniper")).once("value", (snap) => {
-      if (snap.exists()) {
-        this.scene.addText("bullets", `bullets: 0`);
-      }
-    });
+    if (this.scene.wasCreatedByMe()) {
+      this.scene.addText("bullets", `bullets: 0`);
+    }
     this.setupRealtime();
   }
 
@@ -36,35 +36,33 @@ export default class RealPlayer extends RealtimePlayer {
       database.ref(this.getPlayerKey("bullets")).set(this.bullets - 1);
       return true;
     } else {
-      this.showAlert('You are out of bullets!');
+      this.showAlert("You are out of bullets!");
     }
     return false;
   }
 
   updateBullets() {
     this.scene.updateText("bullets", `bullets: ${this.bullets}`);
-    if (this.bullets === 0) {
-      this.scene.removeText("bullets");
-    }
   }
 
   showAlert(text) {
-    let username = getUser();
     if (this.username !== username) return;
-    this.scene.rexUI.add.toast({
-        x: this.scene.scale.width - (90 + (text.length * 4)),
+    this.scene.rexUI.add
+      .toast({
+        x: this.scene.scale.width - (90 + text.length * 4),
         y: this.scene.scale.height - 50,
-        background: this.scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, '#dddddd'),
-        text: this.scene.add.text(0, 0, '', {
-            fontSize: '16px'
+        background: this.scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, "#dddddd"),
+        text: this.scene.add.text(0, 0, "", {
+          fontSize: "16px",
         }),
         space: {
-            left: 20,
-            right: 20,
-            top: 10,
-            bottom: 10,
+          left: 20,
+          right: 20,
+          top: 10,
+          bottom: 10,
         },
-    }).show(text)
+      })
+      .show(text);
   }
 
   getPlayerKey(parts) {
