@@ -3,15 +3,12 @@ import database from "../database";
 
 export default class RealtimePlayer extends Player {
   setupRealtime() {
-    database.ref(this.getPlayerKey("x")).on("value", (snap) => {
-      this.moveToX(snap.val() || 0);
-    });
-    database.ref(this.getPlayerKey("y")).on("value", (snap) => {
-      this.moveToY(snap.val() || 0);
-    });
-    database.ref(this.getPlayerKey("animation")).on("value", (snap) => {
-      this.anims.play(snap.val() || "player-face-right", true);
-    });
+    database.ref(this.getPlayerKey()).on("value", (snap) => {
+      let data = snap.val()
+      this.moveToX(data.x || 0);
+      this.moveToY(data.y || 0);
+      this.anims.play(data.animation || "player-face-right", true)
+    })
   }
   moveRight() {
     let finalX = this.x + this.speed;
