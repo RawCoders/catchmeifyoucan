@@ -98,6 +98,7 @@ export default class Race extends GameScene {
         if (player.username !== this.username && this.player.shoot()) {
           player.die();
           this.player.incrementScore(10);
+          this.player.showAlert(`You killed ${player.username}!`);
         }
       });
 

@@ -92,6 +92,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }[dir];
     this.play(`player-died-${direction}`, true);
     this.anims.stopOnRepeat();
+    this.showAlert('You have been identified!')
+  }
+
+  showAlert(text) {
+    return text;
   }
 
   createAnimations() {
