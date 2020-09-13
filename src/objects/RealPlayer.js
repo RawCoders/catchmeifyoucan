@@ -18,7 +18,10 @@ export default class RealPlayer extends RealtimePlayer {
     this.bullets = 0;
     this.scene.addText(this.username, `${username}: 0`);
     if (this.scene.wasCreatedByMe()) {
-      this.scene.addText("bullets", `bullets: 0`);
+      database.ref(this.getPlayerKey("bullets")).once("value", (snap) => {
+        let value = snap.val() || 0;
+        this.scene.addText("bullets", `bullets: ${value}`);
+      });
     }
     this.setupRealtime();
   }
