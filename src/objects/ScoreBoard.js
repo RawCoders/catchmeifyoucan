@@ -29,4 +29,10 @@ export default class ScoreBoard extends Phaser.GameObjects.Group {
     textObj.text = string;
     textObj.update();
   }
+
+  removeText(key) {
+    let textObj = this.textMap[key];
+    if (!textObj) return;
+    textObj.destroy();
+  }
 }

@@ -51,8 +51,14 @@ export default class Race extends GameScene {
       alert("The game has already begun!");
       return;
     }
-    if (!this.gameData.players[this.username]) {
-      let value = window.confirm("Join Game?");
+
+    if (!this.wasCreatedByMe()) {
+      let value = window.confirm(`Join game as ${this.username}?`);
+
+      while (this.username in this.gameData.players) {
+        this.username = getUser(true, "This username is already taken. Type another one.");
+      }
+
       if (value) {
         database.ref("games/" + this.gameData.uuid + "/players/" + this.username).set({
           racer: 1,
@@ -80,7 +86,7 @@ export default class Race extends GameScene {
         }
       });
 
-      if (this.players.length === 2) {
+      if (this.wasCreatedByMe() && this.players.length === 3) {
         database.ref("games/" + this.gameData.uuid + "/status").set("counting");
       }
     });

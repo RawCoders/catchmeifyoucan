@@ -33,6 +33,9 @@ export default class RealPlayer extends RealtimePlayer {
   setBullets(bullets) {
     this.bullets = bullets;
     this.scene.scoreboard.updateText("bullets", `bullets: ${this.bullets}`);
+    if (this.bullets === 0) {
+      this.scene.scoreboard.removeText("bullets");
+    }
   }
 
   getPlayerKey(parts) {
